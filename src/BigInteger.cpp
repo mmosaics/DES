@@ -69,8 +69,10 @@ BigInteger::BigInteger(const std::string &valStr) {
 std::string BigInteger:: getString() {
 
     std::string result;
-    for(int i = _data.size()-1; i >= 0; i--)
-        result.append(1,_data[i]);
+    for(int i = _data.size()-1; i >= 0; i--) {
+        result.append(1, _data[i]);
+        //cout<<_data[i]<<endl;
+    }
     return result;
 }
 
@@ -487,4 +489,17 @@ void BigInteger::cyclicShift(int num, bool direction) {  //左0右1
     }
 }
 
+
+BigInteger BigInteger::XOR(BigInteger b) {
+    stringstream ss;
+    for(int i = b.getSize() - 1; i >= 0; i--) {
+        if( this->valueOf(i) == b.valueOf(i)) {
+            ss << '0';
+        } else {
+            ss << '1';
+        }
+    }
+
+    return BigInteger(ss.str());
+}
 

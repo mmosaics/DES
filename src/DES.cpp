@@ -21,7 +21,7 @@ BigInteger DES::initialPermutation() {
 
 }
 
-BigInteger DES::initialCandD() {
+void DES::generateKifirstRound() {
     stringstream cstream;
     stringstream dstream;
     stringstream tempstream;
@@ -40,21 +40,29 @@ BigInteger DES::initialCandD() {
     }
 
 
-    this->C0 = BigInteger(cstream.str());
-    this->D0 = BigInteger(dstream.str());
+    C0 = BigInteger(cstream.str());
+    D0 = BigInteger(dstream.str());
 
-    cout<<"C: " << C0.toString() << " size:" << C0.getSize() << endl;
-    cout<<"D: " << D0.toString() << " size:" << D0.getSize() << endl;
+    cout<<"C0: "<<C0.toString()<<endl;
+    cout<<"D0: "<<D0.toString()<<endl;
 
 }
 
 BigInteger DES::generateKi(BigInteger C, BigInteger D, int round) {
+
     int LSi = LS[round];
     stringstream cd;
     C.cyclicShift(LSi, LEFT);
     D.cyclicShift(LSi, LEFT);
     cd<<C.toString() << D.toString();
+    BigInteger CD(cd.str());
+    stringstream tempres;
+    for(int i = 0; i < 48; i++) {
+        tempres << CD.valueOf(CD.getSize() - PC_2[i+1]);
+    }
 
+    BigInteger result(tempres.str());
+    return result;
 
 }
 

@@ -26,8 +26,9 @@ private:
     static map<int, int> PC_2;
     static map<int, int> LS;
 
-    BigInteger K;        //密钥K
-    BigInteger C0, D0;   //存储C0和D0
+    BigInteger K;           //密钥K
+    BigInteger C0;          //存储C0
+    BigInteger D0;          //存储D0
     BigInteger plaintext;
 
 
@@ -40,7 +41,7 @@ public:
     BigInteger initialPermutation();                                //对明文分组进行初始变换
 
     //----生成子密钥----
-    BigInteger initialCandD();                                      //生成C0和D0
+    void generateKifirstRound(); //生成C0和D0
     BigInteger generateKi(BigInteger C, BigInteger D, int round);   //根据轮数生成子密钥
 
 

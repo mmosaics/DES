@@ -70,6 +70,7 @@ public:
 
     //二进制模式操作
     void cyclicShift(int num, bool direction);       //循环移位， num代表位数， direction代表方向 左0右1
+    BigInteger XOR(BigInteger b);                    //只实现了位数相同的异或
 
 
 };
