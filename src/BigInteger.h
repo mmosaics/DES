@@ -28,7 +28,7 @@ private:
 
 public:
     BigInteger();
-    BigInteger(const int val);
+    explicit BigInteger(const int val);
     explicit BigInteger(const string &valStr);
 
 
@@ -65,6 +65,8 @@ public:
     int getFirst();
     string getName();
     void setName(string name);
+    char valueOf(int index);
+    int getSize();
 
 
 

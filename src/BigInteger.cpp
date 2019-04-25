@@ -401,12 +401,12 @@ BigInteger BigInteger::generateRangeRand(BigInteger max) {
 
     if(max < BigInteger(INT32_MAX)) {
         randNum = BigInteger(rand()) % max;
-        while (randNum < 2)
+        while (randNum < TWO)
             randNum = BigInteger(rand()) % max;
 
     } else {
         randNum = BigInteger(rand()) % INTMAX;
-        while (randNum < 2)
+        while (randNum < TWO)
             randNum = BigInteger(rand()) % INTMAX;
     }
 
@@ -463,5 +463,12 @@ void BigInteger::setName(string name) {
     this->name = name;
 }
 
+char BigInteger::valueOf(int index) {
+    return _data[index];
+}
+
+int BigInteger::getSize() {
+    return _data.size();
+}
 
 
