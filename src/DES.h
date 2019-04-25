@@ -27,9 +27,15 @@ private:
     static map<int, int> LS;
 
     BigInteger K;           //密钥K
-    BigInteger C0;          //存储C0
-    BigInteger D0;          //存储D0
-    BigInteger plaintext;
+    BigInteger C;          //存储C
+    BigInteger D;          //存储D
+    BigInteger plaintext;   //存储明文
+
+    //----置换模块----
+    BigInteger universalPermutation(BigInteger var, map<int, int> perMap);
+    //----分割比特位---
+    BigInteger splitBit(BigInteger bits, int size, bool side);
+
 
 
 public:
@@ -37,20 +43,46 @@ public:
     //----构造函数-----
     explicit DES(string K);
 
-    //----初始置换-----
-    BigInteger initialPermutation();                                //对明文分组进行初始变换
-
     //----生成子密钥----
     void generateKifirstRound(); //生成C0和D0
     BigInteger generateKi(BigInteger C, BigInteger D, int round);   //根据轮数生成子密钥
+
+    //----初始置换-----
+    BigInteger InitialPermutation();                                //对明文分组进行初始变换
+
+    //----E扩展运算----
+    BigInteger Expansion(BigInteger R);
+
+    //----S盒运算-----
+    BigInteger Substitution(BigInteger var);
+
+    //----P置换------
+    BigInteger Permutation(BigInteger var);
+
+    //----F函数------
+    BigInteger FeistelFunc(BigInteger K, BigInteger R);
+
+    //----轮函数-----
+    BigInteger RoundFunc(BigInteger var, BigInteger Ki, int round);
+
+    //----16轮变换----
+    BigInteger Round16(BigInteger var);
+
+    //----位置交换----
+    BigInteger ReversePosition(BigInteger var);
+
+    //----初始逆置换---
+    BigInteger InitialInversePermutation(BigInteger var);
+
+
+    //----加密-----
+    string Encrypt();
 
 
 
 
     //----重要私有成员设置----
     void setPlaintext(string plaintext);                            //设置明文
-
-
 
 
 

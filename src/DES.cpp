@@ -3,48 +3,58 @@
 //
 
 #include "DES.h"
+#include "cassert"
+
+
+//-----转换表-----
+map<char, int> charToInt = {{'0', 0}, {'1', 1}};
+map<int, char> intToChar = {{1,'1'}, {'0', 0}};
+
+map<int, string> intToBinary = {
+        {0,"0000"}, {1,"0001"}, {2,"0010"}, {3,"0011"}, {4,"0100"}, {5,"0101"}, {6,"0110"}, {7,"0111"},
+        {8,"1000"}, {9,"1001"}, {10,"1010"}, {11,"1011"}, {12,"1100"}, {13,"1101"}, {14,"1110"}, {15,"1111"}
+};
+
 
 DES::DES(string K) {
     this->K = BigInteger(K).toBinary(0);
+    generateKifirstRound();
 }
 
 
-BigInteger DES::initialPermutation() {
+BigInteger DES::InitialPermutation() {
 
+    /*
     stringstream resultss;
 
     for(int i = 1; i <= plaintext.getSize(); i++) {
         resultss << plaintext.valueOf(plaintext.getSize()-IP[i]);
     }
+     */
 
-    return BigInteger(resultss.str());
+    return universalPermutation(plaintext, IP);
 
 }
 
 void DES::generateKifirstRound() {
-    stringstream cstream;
-    stringstream dstream;
+
     stringstream tempstream;
 
+    /*
     for(int i = 0; i < 56; i++) {
         tempstream << K.valueOf(K.getSize() - PC_1[i+1]);
     }
 
-    BigInteger temp(tempstream.str());
+    BigInteger temp(tempstream.str()); */
 
-    for(int i = 0; i < temp.getSize(); i++) {
-        if( i<  28 )
-            dstream << temp.valueOf(28 - i - 1);
-        if( i>= 28 )
-            cstream << temp.valueOf(56 - i + 28 - 1);
-    }
+    BigInteger temp = universalPermutation(K, PC_1);
 
 
-    C0 = BigInteger(cstream.str());
-    D0 = BigInteger(dstream.str());
+    C = splitBit(temp, 28, LEFT);
+    D = splitBit(temp, 28, RIGHT);
 
-    cout<<"C0: "<<C0.toString()<<endl;
-    cout<<"D0: "<<D0.toString()<<endl;
+    //cout<<"C: "<<C.toString()<<endl;
+    //cout<<"D: "<<D.toString()<<endl;
 
 }
 
@@ -56,18 +66,138 @@ BigInteger DES::generateKi(BigInteger C, BigInteger D, int round) {
     D.cyclicShift(LSi, LEFT);
     cd<<C.toString() << D.toString();
     BigInteger CD(cd.str());
-    stringstream tempres;
+
+    /*stringstream tempres;
     for(int i = 0; i < 48; i++) {
         tempres << CD.valueOf(CD.getSize() - PC_2[i+1]);
     }
 
     BigInteger result(tempres.str());
-    return result;
+
+     */
+
+    this->C = splitBit(CD, 28, LEFT);
+    this->D = splitBit(CD, 28, RIGHT);
+    //cout<<"C: "<<C.toString()<<endl;
+    //cout<<"D: "<<D.toString()<<endl;
+
+
+    return universalPermutation(CD, PC_2);
+
+}
+
+BigInteger DES::splitBit(BigInteger bits, int size, bool side) {
+
+    stringstream lstream;
+    stringstream rstream;
+
+    for(int i = 0; i < bits.getSize(); i++) {
+        if( i<  size )
+            rstream << bits.valueOf(size - i - 1);
+        if( i>= size )
+            lstream << bits.valueOf(bits.getSize() - i + size - 1);
+    }
+
+    if(!side)
+        return BigInteger(lstream.str());
+    else
+        return BigInteger(rstream.str());
+}
+
+
+BigInteger DES::Expansion(BigInteger R) {
+
+    return universalPermutation(R, E);
+
+}
+
+BigInteger DES::Substitution(BigInteger var) {
+
+    stringstream resultss;
+
+    for(int i = 0, j = 6; i < 8; i++ ){
+        int base = j * i;
+        int row = charToInt[var.valueOf(base)]*2 + charToInt[var.valueOf(base+5)];
+        int column = charToInt[var.valueOf(base+1)]*8 + charToInt[var.valueOf(base+2)]*4 +
+                        charToInt[var.valueOf(base+3)]*2 + charToInt[var.valueOf(base+4)];
+        int result = S[i][row][column];
+
+        resultss <<  intToBinary[result];
+    }
+
+    return BigInteger(resultss.str());
+
+}
+
+BigInteger DES::Permutation(BigInteger var) {
+
+    return universalPermutation(var, P);
+
+}
+
+BigInteger DES::FeistelFunc(BigInteger K, BigInteger R) {
+
+     return Permutation(Substitution(K.XOR(Expansion(R))));
+
+}
+
+BigInteger DES::RoundFunc(BigInteger var, BigInteger Ki, int round) {
+
+    BigInteger L = splitBit(var, var.getSize()/2, LEFT);
+    BigInteger R = splitBit(var, var.getSize()/2, RIGHT);
+
+    BigInteger resultL = R;
+    BigInteger resultR = L.XOR(FeistelFunc(Ki, R));
+
+    stringstream ss;
+    ss << resultL.toString() << resultR.toString();
+    return BigInteger(ss.str());
+
+}
+
+BigInteger DES::Round16(BigInteger var) {
+
+    BigInteger tempRoundRes = var; //初始置换
+
+    for(int i = 0; i < 16; i++){
+        BigInteger Ki = generateKi(C, D, i+1);
+        tempRoundRes = RoundFunc(tempRoundRes, Ki, i+1);
+    }
+
+    return tempRoundRes;
+
+}
+
+BigInteger DES::ReversePosition(BigInteger var) {
+
+    BigInteger L = splitBit(var, var.getSize()/2, LEFT);
+    BigInteger R = splitBit(var, var.getSize()/2, RIGHT);
+
+    stringstream ss;
+    ss << R.toString() << L.toString();
+
+    return BigInteger(ss.str());
+
+}
+
+BigInteger DES::InitialInversePermutation(BigInteger var) {
+
+    return universalPermutation(var, inverseIP);
 
 }
 
 
+string DES::Encrypt() {
 
+    BigInteger initpermutation = InitialPermutation();
+    BigInteger round16 = Round16(initpermutation);
+    BigInteger reverspos = ReversePosition(round16);
+    BigInteger initInvPer = InitialInversePermutation(reverspos);
+
+    BigInteger cipher = initInvPer.toHex().toString();
+    return cipher;
+
+}
 
 
 
@@ -78,15 +208,23 @@ void DES::setPlaintext(string plaintext) {
     this->plaintext = BigInteger(plaintext).toBinary(0);
 }
 
+//----私有函数定义----
 
+BigInteger DES::universalPermutation(BigInteger var, map<int, int> perMap) {
 
+    //assert(var.getSize() == perMap.size());
+
+    stringstream res;
+    for(int i = 0; i < perMap.size(); i++) {
+        res << var.valueOf(var.getSize() - perMap[i+1]);
+    }
+
+    return BigInteger(res.str());
+}
 
 
 
 //----------加密置换表-------------
-map<char, int> charToInt = {{'0', 0}, {'1', 1}};
-map<int, char> intToChar = {{1,'1'}, {'0', 0}};
-
 
 map<int, int> DES::IP = { {1,58}, {2,50}, {3,42}, {4,34}, {5,26}, {6,18}, {7,10}, {8,2},
                           {9,60},{10,52},{11,44},{12,36},{13,28},{14,20},{15,12},{16,4},
