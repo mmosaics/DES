@@ -27,9 +27,11 @@ private:
     static map<int, int> LS;
 
     BigInteger K;           //密钥K
-    BigInteger C;          //存储C
-    BigInteger D;          //存储D
+    BigInteger C;           //存储C
+    BigInteger D;           //存储D
     BigInteger plaintext;   //存储明文
+    BigInteger cipher;      //存储密文
+
 
     //----置换模块----
     BigInteger universalPermutation(BigInteger var, map<int, int> perMap);
@@ -42,6 +44,7 @@ public:
 
     //----构造函数-----
     explicit DES(string K);
+    DES(string K, string plain);
 
     //----生成子密钥----
     void generateKifirstRound(); //生成C0和D0
@@ -76,13 +79,13 @@ public:
 
 
     //----加密-----
-    string Encrypt();
-
-
+    void Encrypt();
 
 
     //----重要私有成员设置----
     void setPlaintext(string plaintext);                            //设置明文
+    void getPlaintext();
+    string getCipher();
 
 
 

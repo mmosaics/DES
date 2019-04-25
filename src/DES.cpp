@@ -21,6 +21,14 @@ DES::DES(string K) {
     generateKifirstRound();
 }
 
+DES::DES(string K, string plain) {
+
+    this->K = BigInteger(K).toBinary(0);
+    this->plaintext = BigInteger(plain).toBinary(0);
+    generateKifirstRound();
+
+}
+
 
 BigInteger DES::InitialPermutation() {
 
@@ -187,15 +195,14 @@ BigInteger DES::InitialInversePermutation(BigInteger var) {
 }
 
 
-string DES::Encrypt() {
+void DES::Encrypt() {
 
     BigInteger initpermutation = InitialPermutation();
     BigInteger round16 = Round16(initpermutation);
     BigInteger reverspos = ReversePosition(round16);
     BigInteger initInvPer = InitialInversePermutation(reverspos);
 
-    BigInteger cipher = initInvPer.toHex().toString();
-    return cipher;
+    this->cipher = initInvPer;
 
 }
 
@@ -203,10 +210,23 @@ string DES::Encrypt() {
 
 
 
-//----私有成员设置----
+
+
+
+
+
+
+
+
+//----私有成员setter/getter----
 void DES::setPlaintext(string plaintext) {
     this->plaintext = BigInteger(plaintext).toBinary(0);
 }
+
+string DES::getCipher() {
+    return cipher.toHex().toString();
+}
+
 
 //----私有函数定义----
 
@@ -221,6 +241,12 @@ BigInteger DES::universalPermutation(BigInteger var, map<int, int> perMap) {
 
     return BigInteger(res.str());
 }
+
+
+
+
+
+
 
 
 
