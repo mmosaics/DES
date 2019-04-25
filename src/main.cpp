@@ -13,16 +13,10 @@ using namespace std;
 int main(int argc, char * argv[]) {
 
 
-    BigInteger test1("4E6574776F726B20");
-    BigInteger binaryTest;
-    binaryTest = test1.toBinary(0);
+    string K = "57696C6C69616D53";
 
-    cout<<binaryTest.toString()<<endl;
-    cout<<binaryTest.toHex().toString()<<endl;
-
-    DES des;
-    BigInteger afterInverse = des.initialPermutation(binaryTest);
-    cout<<afterInverse.toString()<<endl;
+    DES des(K);
+    des.initialCandD();
 
 
     return 0;

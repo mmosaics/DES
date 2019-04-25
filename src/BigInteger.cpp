@@ -471,4 +471,20 @@ int BigInteger::getSize() {
     return _data.size();
 }
 
+void BigInteger::cyclicShift(int num, bool direction) {  //左0右1
+    if(!direction) {
+        for(int i = 0; i < num; i++) {
+            char tmp = _data.back();
+            _data.insert(_data.begin(),tmp);
+            _data.pop_back();
+        }
+    } else {
+        for(int i = 0; i < num; i++) {
+            char tmp = _data.front();
+            _data.erase(_data.begin());
+            _data.push_back(tmp);
+        }
+    }
+}
+
 

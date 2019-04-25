@@ -68,6 +68,8 @@ public:
     char valueOf(int index);
     int getSize();
 
+    //二进制模式操作
+    void cyclicShift(int num, bool direction);       //循环移位， num代表位数， direction代表方向 左0右1
 
 
 };
