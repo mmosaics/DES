@@ -503,3 +503,8 @@ BigInteger BigInteger::XOR(BigInteger b) {
     return BigInteger(ss.str());
 }
 
+void BigInteger::printLineByLine() {
+    for(int i = _data.size()-1; i >= 0; i--) {
+        cout<<_data[i]<<endl;
+    }
+}

@@ -26,6 +26,8 @@ private:
     static map<int, int> PC_2;
     static map<int, int> LS;
 
+    enum ModeOfOperation{ECB, CBC, CFB, OFB};
+
     BigInteger K;           //密钥K
     BigInteger C;           //存储C
     BigInteger D;           //存储D
@@ -82,10 +84,16 @@ public:
     void Encrypt();
 
 
+
     //----重要私有成员设置----
     void setPlaintext(string plaintext);                            //设置明文
     void getPlaintext();
     string getCipher();
+
+
+    //测试函数(完成后清除）
+    void printPer();
+    void printArg();
 
 
 

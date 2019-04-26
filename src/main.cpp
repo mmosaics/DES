@@ -5,6 +5,7 @@
 #include "sstream"
 #include "typeinfo"
 #include "DES.h"
+#include "BlockEncrytion.h"
 
 using namespace std;
 
@@ -14,17 +15,13 @@ int main(int argc, char * argv[]) {
 
 
     string K = "57696C6C69616D53";
+    string plain = "4E6574776F726B20";
 
-    BigInteger k(K);
 
-    //cout<<k.toBinary(0).toString()<<endl;
+    BlockEncryption blockEncryption(ECB, DES, plain, K);
+    cout<<blockEncryption.modeECB()<<endl;
 
-    DES des(K);
-    //des.generateKifirstRound();
-    BigInteger C("0000000011111111011111101000");
-    BigInteger D("1000000101001101010111100001");
-    BigInteger res = des.generateKi(C,D,1);
-    cout<<res.toString()<<endl<<res.getSize()<<endl;
+
 
 
     return 0;

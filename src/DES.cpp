@@ -27,18 +27,12 @@ DES::DES(string K, string plain) {
     this->plaintext = BigInteger(plain).toBinary(0);
     generateKifirstRound();
 
+    //printArg();
+
 }
 
 
 BigInteger DES::InitialPermutation() {
-
-    /*
-    stringstream resultss;
-
-    for(int i = 1; i <= plaintext.getSize(); i++) {
-        resultss << plaintext.valueOf(plaintext.getSize()-IP[i]);
-    }
-     */
 
     return universalPermutation(plaintext, IP);
 
@@ -48,12 +42,6 @@ void DES::generateKifirstRound() {
 
     stringstream tempstream;
 
-    /*
-    for(int i = 0; i < 56; i++) {
-        tempstream << K.valueOf(K.getSize() - PC_1[i+1]);
-    }
-
-    BigInteger temp(tempstream.str()); */
 
     BigInteger temp = universalPermutation(K, PC_1);
 
@@ -61,8 +49,6 @@ void DES::generateKifirstRound() {
     C = splitBit(temp, 28, LEFT);
     D = splitBit(temp, 28, RIGHT);
 
-    //cout<<"C: "<<C.toString()<<endl;
-    //cout<<"D: "<<D.toString()<<endl;
 
 }
 
@@ -75,20 +61,8 @@ BigInteger DES::generateKi(BigInteger C, BigInteger D, int round) {
     cd<<C.toString() << D.toString();
     BigInteger CD(cd.str());
 
-    /*stringstream tempres;
-    for(int i = 0; i < 48; i++) {
-        tempres << CD.valueOf(CD.getSize() - PC_2[i+1]);
-    }
-
-    BigInteger result(tempres.str());
-
-     */
-
     this->C = splitBit(CD, 28, LEFT);
     this->D = splitBit(CD, 28, RIGHT);
-    //cout<<"C: "<<C.toString()<<endl;
-    //cout<<"D: "<<D.toString()<<endl;
-
 
     return universalPermutation(CD, PC_2);
 
@@ -124,10 +98,10 @@ BigInteger DES::Substitution(BigInteger var) {
     stringstream resultss;
 
     for(int i = 0, j = 6; i < 8; i++ ){
-        int base = j * i;
-        int row = charToInt[var.valueOf(base)]*2 + charToInt[var.valueOf(base+5)];
-        int column = charToInt[var.valueOf(base+1)]*8 + charToInt[var.valueOf(base+2)]*4 +
-                        charToInt[var.valueOf(base+3)]*2 + charToInt[var.valueOf(base+4)];
+        int base = j * (8 - i - 1);
+        int row = charToInt[var.valueOf(base)] + charToInt[var.valueOf(base+5)] *2;
+        int column = charToInt[var.valueOf(base+1)] + charToInt[var.valueOf(base+2)]*2 +
+                        charToInt[var.valueOf(base+3)]*4 + charToInt[var.valueOf(base+4)]*8;
         int result = S[i][row][column];
 
         resultss <<  intToBinary[result];
@@ -159,6 +133,7 @@ BigInteger DES::RoundFunc(BigInteger var, BigInteger Ki, int round) {
 
     stringstream ss;
     ss << resultL.toString() << resultR.toString();
+
     return BigInteger(ss.str());
 
 }
@@ -169,6 +144,10 @@ BigInteger DES::Round16(BigInteger var) {
 
     for(int i = 0; i < 16; i++){
         BigInteger Ki = generateKi(C, D, i+1);
+        //cout<<"generateKi: " <<endl;
+        //Ki.printLineByLine();
+        //cout<<"第"<<i+1<<"轮："<<endl;
+        //printArg();
         tempRoundRes = RoundFunc(tempRoundRes, Ki, i+1);
     }
 
@@ -198,6 +177,8 @@ BigInteger DES::InitialInversePermutation(BigInteger var) {
 void DES::Encrypt() {
 
     BigInteger initpermutation = InitialPermutation();
+    //cout<<"初始置换之后: "<<endl;
+    //initpermutation.printLineByLine();
     BigInteger round16 = Round16(initpermutation);
     BigInteger reverspos = ReversePosition(round16);
     BigInteger initInvPer = InitialInversePermutation(reverspos);
@@ -205,14 +186,6 @@ void DES::Encrypt() {
     this->cipher = initInvPer;
 
 }
-
-
-
-
-
-
-
-
 
 
 
@@ -243,7 +216,19 @@ BigInteger DES::universalPermutation(BigInteger var, map<int, int> perMap) {
 }
 
 
+//----测试函数----
+void DES::printPer() {
+    for(int i = 0; i < P.size(); i++) {
+        cout<<P[i+1]<<endl;
+    }
+}
 
+void DES::printArg() {
+    cout<<"C: "<<endl;
+    C.printLineByLine();
+    cout<<"D: "<<endl;
+    D.printLineByLine();
+}
 
 
 
@@ -280,9 +265,9 @@ map<int,int> DES::E = { {1,32},  {2,1},  {3,2},  {4,3},  {5,4},  {6,5},
                         {43,28},{44,29},{45,30},{46,31},{47,32},{48,1}};
 
 int DES::S[8][4][16] = {  {{14,4,13,1,2,15,11,8,3,10,6,12,5,9,0,7},
-                                  {0,15,7,4,14,2,13,1,10,6,12,11,9,5,3,8},
-                                  {4,1,14,8,13,6,2,11,15,12,9,7,3,10,5,0},
-                                  {15,12,8,2,4,9,1,7,5,11,3,14,10,0,6,13}},
+                           {0,15,7,4,14,2,13,1,10,6,12,11,9,5,3,8},
+                           {4,1,14,8,13,6,2,11,15,12,9,7,3,10,5,0},
+                           {15,12,8,2,4,9,1,7,5,11,3,14,10,0,6,13}},
 
                           {{15,1,8,14,6,11,3,4,9,7,2,13,12,0,5,10},
                                   {3,13,4,7,5,2,8,14,12,0,1,10,6,9,11,5},
@@ -320,7 +305,7 @@ int DES::S[8][4][16] = {  {{14,4,13,1,2,15,11,8,3,10,6,12,5,9,0,7},
                                   {2,1,14,7,4,10,8,13,15,2,9,0,3,5,6,1}}};
 
 
-map<int, int> DES::P = {  {1,16}, {2,17}, {3,20}, {4,21}, {5,29}, {6,12}, {7,28}, {8,17},
+map<int, int> DES::P = {  {1,16}, {2,7}, {3,20}, {4,21}, {5,29}, {6,12}, {7,28}, {8,17},
                           {9,1},{10,15},{11,23},{12,26}, {13,5},{14,18},{15,31},{16,10},
                           {17,2}, {18,8},{19,24},{20,14},{21,32},{22,27}, {23,3}, {24,9},
                           {25,19},{26,13},{27,30}, {28,6},{29,22},{30,11}, {31,4},{32,25}};
