@@ -47,6 +47,7 @@ public:
     //----构造函数-----
     explicit DES(string K);
     DES(string K, string plain);
+    DES(BigInteger K, BigInteger plain);
 
     //----生成子密钥----
     void generateKifirstRound(); //生成C0和D0

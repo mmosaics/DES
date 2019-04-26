@@ -19,14 +19,18 @@ private:
 
     string plaintext;
     string K;
+    BigInteger IV;
 
 public:
 
     BlockEncryption(ModeOfOperation mod, Algorithm algorithm, string plaintext, string K);
+    BlockEncryption(ModeOfOperation mod, Algorithm algorithm, string plaintext, string K, string IV);
 
     //----工作模式----
     string modeECB();
-
+    string modeCBC();
+    string modeCFB();
+    string modeCTR();
 
 
 

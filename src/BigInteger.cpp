@@ -35,7 +35,7 @@ inline bool isDigit(const char ch)
 
 BigInteger::BigInteger() {}
 
-BigInteger::BigInteger(const int val) {
+BigInteger::BigInteger(int val) {
     int quantity = 0;
     int temp = val;
     while(temp != 0) {
@@ -52,7 +52,7 @@ BigInteger::BigInteger(const int val) {
     }
 }
 
-BigInteger::BigInteger(const std::string &valStr) {
+BigInteger::BigInteger(string valStr) {
 
 
     for(int i = valStr.length() - 1; i>=0; i--) {

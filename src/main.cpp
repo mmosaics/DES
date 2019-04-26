@@ -15,11 +15,15 @@ int main(int argc, char * argv[]) {
 
 
     string K = "57696C6C69616D53";
-    string plain = "4E6574776F726B20";
+    string plain = "4E6574776F726B205365637572697479";
+    string IV = "5072656E74696365";
 
 
-    BlockEncryption blockEncryption(ECB, DES, plain, K);
-    cout<<blockEncryption.modeECB()<<endl;
+    BlockEncryption blockEncryption(CBC, DES, plain, K, IV);
+
+    //cout<<blockEncryption.modeECB()<<endl;
+    cout<<blockEncryption.modeCBC()<<endl;
+
 
 
 

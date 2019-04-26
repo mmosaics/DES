@@ -28,8 +28,8 @@ private:
 
 public:
     BigInteger();
-    explicit BigInteger(const int val);
-    explicit BigInteger(const string &valStr);
+    explicit BigInteger(int val);
+    explicit BigInteger(string valStr);
 
 
     //四则运算符重载
