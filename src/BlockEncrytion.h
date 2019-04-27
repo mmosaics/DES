@@ -27,20 +27,29 @@ private:
     BigInteger shiftRegOperaForOFB(BigInteger shiftReg, BigInteger target, int operaMode);
     BigInteger shiftRegOperaForCFB(BigInteger shiftReg, BigInteger target, int operaMode);
 
-public:
-
-    BlockEncryption(ModeOfOperation mod, Algorithm algorithm, string plaintext, string cipher, string K);
-    BlockEncryption(ModeOfOperation mod, Algorithm algorithm, string plaintext, string cipher, string K, string IV);
-
     //----工作模式----
     string modeECB(Direction direction);
     string modeCBC(Direction direction);
     string modeCFB(Direction direction, int operaMode);
     string modeOFB(Direction direction, int operaMode);
 
+
+public:
+
+    BlockEncryption(ModeOfOperation mod, Algorithm algorithm, string plaintext, string cipher, string K);
+    BlockEncryption(ModeOfOperation mod, Algorithm algorithm, string plaintext, string cipher, string K, string IV);
+
+    //----外部调用----
+    string Encrypt();
+    string Decrypt();
+
     //----getter/setter----
     void setPlaintext(string plain);
     void setCipher(string cipher);
+    void setMod(ModeOfOperation mod);
+    void setAlgorithm(Algorithm algorithm);
+    void setKey(string key);
+    void setIV(string iv);
 
 
 };

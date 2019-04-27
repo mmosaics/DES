@@ -251,6 +251,79 @@ string BlockEncryption::modeOFB(Direction direction, int operaMode) {
     return resultss.str();
 }
 
+string BlockEncryption::Encrypt() {
+    string result;
+
+    switch(currentMod) {
+        case ECB:
+            result = modeECB(ENCRPT);
+            break;
+        case CBC:
+            result = modeCBC(ENCRPT);
+            break;
+        case CFB:
+            result = modeCFB(ENCRPT, 8);
+            break;
+        case OFB:
+            result = modeOFB(ENCRPT, 8);
+            break;
+    }
+
+    return result;
+
+}
+
+string BlockEncryption::Decrypt() {
+    string result;
+
+    switch(currentMod) {
+        case ECB:
+            result = modeECB(DECRPT);
+            break;
+        case CBC:
+            result = modeCBC(DECRPT);
+            break;
+        case CFB:
+            result = modeCFB(DECRPT, 8);
+            break;
+        case OFB:
+            result = modeOFB(DECRPT, 8);
+            break;
+    }
+
+    return result;
+}
+
+
+
+//------设置函数-------
+
+void BlockEncryption::setPlaintext(string plain) {
+    this->plaintext = plain;
+}
+
+void BlockEncryption::setCipher(string cipher) {
+    this->ciphertext = cipher;
+}
+
+void BlockEncryption::setMod(ModeOfOperation mod) {
+    this->currentMod = mod;
+}
+
+void BlockEncryption::setAlgorithm(Algorithm algorithm) {
+    this->currentAlgorithm = algorithm;
+}
+
+void BlockEncryption::setKey(string key) {
+    this->K = key;
+}
+
+void BlockEncryption::setIV(string iv) {
+    this->IV = BigInteger(iv);
+}
+
+//-----辅助函数-------
+
 BigInteger BlockEncryption::shiftRegOperaForOFB(BigInteger shiftReg, BigInteger target, int operaMode) {
 
     BigInteger bShiftReg = shiftReg.toBinary(0);     //移位寄存器二进制形式
@@ -269,12 +342,4 @@ BigInteger BlockEncryption::shiftRegOperaForCFB(BigInteger shiftReg, BigInteger 
     shiftReg = bShiftReg.toHex();                   //保存记录
 
     return shiftReg;
-}
-
-void BlockEncryption::setPlaintext(string plain) {
-    this->plaintext = plain;
-}
-
-void BlockEncryption::setCipher(string cipher) {
-    this->ciphertext = cipher;
 }
