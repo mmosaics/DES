@@ -4,6 +4,17 @@
 CMakeFiles/DES.dir/src/BigInteger.cpp.o: ../src/BigInteger.cpp
 CMakeFiles/DES.dir/src/BigInteger.cpp.o: ../src/BigInteger.h
 
+CMakeFiles/DES.dir/src/BlockEncrytion.cpp.o: ../src/BigInteger.h
+CMakeFiles/DES.dir/src/BlockEncrytion.cpp.o: ../src/BlockEncrytion.cpp
+CMakeFiles/DES.dir/src/BlockEncrytion.cpp.o: ../src/BlockEncrytion.h
+CMakeFiles/DES.dir/src/BlockEncrytion.cpp.o: ../src/DES.h
+
+CMakeFiles/DES.dir/src/DES.cpp.o: ../src/BigInteger.h
+CMakeFiles/DES.dir/src/DES.cpp.o: ../src/DES.cpp
+CMakeFiles/DES.dir/src/DES.cpp.o: ../src/DES.h
+
 CMakeFiles/DES.dir/src/main.cpp.o: ../src/BigInteger.h
+CMakeFiles/DES.dir/src/main.cpp.o: ../src/BlockEncrytion.h
+CMakeFiles/DES.dir/src/main.cpp.o: ../src/DES.h
 CMakeFiles/DES.dir/src/main.cpp.o: ../src/main.cpp
 

@@ -150,6 +150,60 @@ src/BigInteger.cpp.s:
 	$(MAKE) -f CMakeFiles/DES.dir/build.make CMakeFiles/DES.dir/src/BigInteger.cpp.s
 .PHONY : src/BigInteger.cpp.s
 
+src/BlockEncrytion.o: src/BlockEncrytion.cpp.o
+
+.PHONY : src/BlockEncrytion.o
+
+# target to build an object file
+src/BlockEncrytion.cpp.o:
+	$(MAKE) -f CMakeFiles/DES.dir/build.make CMakeFiles/DES.dir/src/BlockEncrytion.cpp.o
+.PHONY : src/BlockEncrytion.cpp.o
+
+src/BlockEncrytion.i: src/BlockEncrytion.cpp.i
+
+.PHONY : src/BlockEncrytion.i
+
+# target to preprocess a source file
+src/BlockEncrytion.cpp.i:
+	$(MAKE) -f CMakeFiles/DES.dir/build.make CMakeFiles/DES.dir/src/BlockEncrytion.cpp.i
+.PHONY : src/BlockEncrytion.cpp.i
+
+src/BlockEncrytion.s: src/BlockEncrytion.cpp.s
+
+.PHONY : src/BlockEncrytion.s
+
+# target to generate assembly for a file
+src/BlockEncrytion.cpp.s:
+	$(MAKE) -f CMakeFiles/DES.dir/build.make CMakeFiles/DES.dir/src/BlockEncrytion.cpp.s
+.PHONY : src/BlockEncrytion.cpp.s
+
+src/DES.o: src/DES.cpp.o
+
+.PHONY : src/DES.o
+
+# target to build an object file
+src/DES.cpp.o:
+	$(MAKE) -f CMakeFiles/DES.dir/build.make CMakeFiles/DES.dir/src/DES.cpp.o
+.PHONY : src/DES.cpp.o
+
+src/DES.i: src/DES.cpp.i
+
+.PHONY : src/DES.i
+
+# target to preprocess a source file
+src/DES.cpp.i:
+	$(MAKE) -f CMakeFiles/DES.dir/build.make CMakeFiles/DES.dir/src/DES.cpp.i
+.PHONY : src/DES.cpp.i
+
+src/DES.s: src/DES.cpp.s
+
+.PHONY : src/DES.s
+
+# target to generate assembly for a file
+src/DES.cpp.s:
+	$(MAKE) -f CMakeFiles/DES.dir/build.make CMakeFiles/DES.dir/src/DES.cpp.s
+.PHONY : src/DES.cpp.s
+
 src/main.o: src/main.cpp.o
 
 .PHONY : src/main.o
@@ -189,6 +243,12 @@ help:
 	@echo "... src/BigInteger.o"
 	@echo "... src/BigInteger.i"
 	@echo "... src/BigInteger.s"
+	@echo "... src/BlockEncrytion.o"
+	@echo "... src/BlockEncrytion.i"
+	@echo "... src/BlockEncrytion.s"
+	@echo "... src/DES.o"
+	@echo "... src/DES.i"
+	@echo "... src/DES.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

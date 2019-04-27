@@ -86,6 +86,18 @@
 		<Unit filename="/Users/jeffrey/CLionProjects/DES/src/BigInteger.h">
 			<Option target="DES"/>
 		</Unit>
+		<Unit filename="/Users/jeffrey/CLionProjects/DES/src/BlockEncrytion.cpp">
+			<Option target="DES"/>
+		</Unit>
+		<Unit filename="/Users/jeffrey/CLionProjects/DES/src/BlockEncrytion.h">
+			<Option target="DES"/>
+		</Unit>
+		<Unit filename="/Users/jeffrey/CLionProjects/DES/src/DES.cpp">
+			<Option target="DES"/>
+		</Unit>
+		<Unit filename="/Users/jeffrey/CLionProjects/DES/src/DES.h">
+			<Option target="DES"/>
+		</Unit>
 		<Unit filename="/Users/jeffrey/CLionProjects/DES/src/main.cpp">
 			<Option target="DES"/>
 		</Unit>
