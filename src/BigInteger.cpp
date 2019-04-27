@@ -508,3 +508,28 @@ void BigInteger::printLineByLine() {
         cout<<_data[i]<<endl;
     }
 }
+
+void BigInteger::logicalShift(int num, bool direction) {
+
+    if(!direction) {
+        for(int i = 0; i < num; i++) {
+            _data.insert(_data.begin(), '0');
+            _data.pop_back();
+        }
+    } else {
+        for(int i = 0; i < num; i++) {
+            _data.push_back('0');
+            _data.erase(_data.begin());
+        }
+    }
+}
+
+BigInteger BigInteger::subbits(int start, int num) {
+
+    stringstream ss;
+    for(int i = _data.size() - 1 - start; i >= _data.size() - start - num ; i-- ) {
+        ss << _data[i];
+    }
+
+    return BigInteger(ss.str());
+}

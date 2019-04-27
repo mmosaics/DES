@@ -18,27 +18,37 @@ map<int, string> intToBinary = {
 
 DES::DES(string K) {
     this->K = BigInteger(K).toBinary(0);
-    generateKifirstRound();
+    generateAllKi();
+    //generateKifirstRound();
 }
 
-DES::DES(string K, string plain) {
+DES::DES(string K, string target, Direction initState) {
 
     this->K = BigInteger(K).toBinary(0);
-    this->plaintext = BigInteger(plain).toBinary(0);
-    generateKifirstRound();
+    if(initState == ENCRPT) {
+        this->plaintext = BigInteger(target).toBinary(0);
+    } else {
+        this->cipher = BigInteger(target).toBinary(0);
+    }
+    generateAllKi();
+    //generateKifirstRound();
 
-    //printArg();
 }
 
-DES::DES(BigInteger K, BigInteger plain) {
+DES::DES(BigInteger K, BigInteger target, Direction initState) {
     this->K = K.toBinary(0);
-    this->plaintext = plain.toBinary(0);
-    generateKifirstRound();
+    if(initState == ENCRPT) {
+        this->plaintext = target.toBinary(0);
+    } else {
+        this->cipher = target.toBinary(0);
+    }
+    generateAllKi();
+    //generateKifirstRound();
 }
 
-BigInteger DES::InitialPermutation() {
+BigInteger DES::InitialPermutation(BigInteger plain) {
 
-    return universalPermutation(plaintext, IP);
+    return universalPermutation(plain, IP);
 
 }
 
@@ -69,6 +79,15 @@ BigInteger DES::generateKi(BigInteger C, BigInteger D, int round) {
     this->D = splitBit(CD, 28, RIGHT);
 
     return universalPermutation(CD, PC_2);
+
+}
+
+void DES::generateAllKi() {
+
+    generateKifirstRound();
+    for(int i = 0; i < 16; i++) {
+        Ki[i] = generateKi(C, D, i+1);
+    }
 
 }
 
@@ -145,14 +164,27 @@ BigInteger DES::RoundFunc(BigInteger var, BigInteger Ki, int round) {
 
 }
 
-BigInteger DES::Round16(BigInteger var) {
+BigInteger DES::Round16(BigInteger var, Direction d) {
 
     BigInteger tempRoundRes = var; //初始置换
+    if(d == ENCRPT) {
 
-    for(int i = 0; i < 16; i++){
-        BigInteger Ki = generateKi(C, D, i+1);
+        for(int i = 0; i < 16; i++){
 
-        tempRoundRes = RoundFunc(tempRoundRes, Ki, i+1);
+            //BigInteger Ki = generateKi(C, D, i+1);
+
+            BigInteger oneKi = Ki[i];
+
+            tempRoundRes = RoundFunc(tempRoundRes, oneKi, i+1);
+        }
+    } else {
+
+        for(int i = 15; i >= 0; i--) {
+
+            BigInteger oneKi = Ki[i];
+            tempRoundRes = RoundFunc(tempRoundRes, oneKi, i+1);
+        }
+
     }
 
     return tempRoundRes;
@@ -180,14 +212,23 @@ BigInteger DES::InitialInversePermutation(BigInteger var) {
 
 void DES::Encrypt() {
 
-    BigInteger initpermutation = InitialPermutation();
-    //cout<<"初始置换之后: "<<endl;
-    //initpermutation.printLineByLine();
-    BigInteger round16 = Round16(initpermutation);
+    BigInteger initpermutation = InitialPermutation(plaintext);
+    BigInteger round16 = Round16(initpermutation, ENCRPT);
     BigInteger reverspos = ReversePosition(round16);
     BigInteger initInvPer = InitialInversePermutation(reverspos);
 
     this->cipher = initInvPer;
+
+}
+
+void DES::Decrypt() {
+
+    BigInteger initpermutation = InitialPermutation(cipher);
+    BigInteger round16 = Round16(initpermutation, DECRPT);
+    BigInteger reverspos = ReversePosition(round16);
+    BigInteger initInvPer = InitialInversePermutation(reverspos);
+
+    this->plaintext = initInvPer;
 
 }
 
@@ -200,9 +241,27 @@ void DES::setPlaintext(string plaintext) {
     this->plaintext = BigInteger(plaintext).toBinary(0);
 }
 
+void DES::setPlaintext(BigInteger plaintext) {
+    this->plaintext = plaintext.toBinary(0);
+}
+
+void DES::setCipher(string cipher) {
+    this->cipher = BigInteger(cipher).toBinary(0);
+}
+
+void DES::setCipher(BigInteger cipher) {
+    this->cipher = cipher.toBinary(0);
+}
+
 string DES::getCipher() {
     return cipher.toHex().toString();
 }
+
+string DES::getPlaintext() {
+    return plaintext.toHex().toString();
+}
+
+
 
 
 //----私有函数定义----
