@@ -30,12 +30,17 @@ private:
     //----工作模式----
     string modeECB(Direction direction);
     string modeCBC(Direction direction);
-    string modeCFB(Direction direction, int operaMode);
-    string modeOFB(Direction direction, int operaMode);
+    string modeCFB(Direction direction, int operaMod);
+    string modeOFB(Direction direction, int operaMod);
+
+    //-----辅助函数----
+    string operateCFB(string source, int operaMod);
+    string operateOFB(string source, int operaMod);
 
 
 public:
 
+    BlockEncryption();
     BlockEncryption(ModeOfOperation mod, Algorithm algorithm, string plaintext, string cipher, string K);
     BlockEncryption(ModeOfOperation mod, Algorithm algorithm, string plaintext, string cipher, string K, string IV);
 
@@ -43,7 +48,7 @@ public:
     string Encrypt();
     string Decrypt();
 
-    //----getter/setter----
+    //----必要参数设置----
     void setPlaintext(string plain);
     void setCipher(string cipher);
     void setMod(ModeOfOperation mod);

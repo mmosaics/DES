@@ -253,6 +253,18 @@ void DES::setCipher(BigInteger cipher) {
     this->cipher = cipher.toBinary(0);
 }
 
+void DES::setKey(string key) {
+    this->K = BigInteger(key).toBinary(0);
+}
+
+void DES::setKey(BigInteger key) {
+    this->K = key.toBinary(0);
+}
+
+void DES::setState(Direction direction) {
+    this->initState = direction;
+}
+
 string DES::getCipher() {
     return cipher.toHex().toString();
 }
@@ -277,22 +289,6 @@ BigInteger DES::universalPermutation(BigInteger var, map<int, int> perMap) {
 
     return BigInteger(res.str());
 }
-
-
-//----测试函数----
-void DES::printPer() {
-    for(int i = 0; i < P.size(); i++) {
-        cout<<P[i+1]<<endl;
-    }
-}
-
-void DES::printArg() {
-    cout<<"C: "<<endl;
-    C.printLineByLine();
-    cout<<"D: "<<endl;
-    D.printLineByLine();
-}
-
 
 
 

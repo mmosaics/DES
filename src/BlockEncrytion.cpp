@@ -4,6 +4,8 @@
 
 #include "BlockEncrytion.h"
 
+BlockEncryption::BlockEncryption() {}
+
 BlockEncryption::BlockEncryption(ModeOfOperation mod, Algorithm algorithm, string plaintext, string cipher, string K) {
 
     currentMod = mod;
@@ -78,9 +80,7 @@ string BlockEncryption::modeCBC(Direction direction) {
 
             if (i != arrsize - 1) {
                 blocks[i + 1] = blocks[i + 1].toBinary(0).XOR(BigInteger(des.getCipher()).toBinary(0)).toHex();
-
             }
-
         }
     } else if(direction == DECRPT ) {
 
@@ -107,148 +107,32 @@ string BlockEncryption::modeCBC(Direction direction) {
     return resultss.str();
 }
 
-string BlockEncryption::modeCFB(Direction direction, int operaMode) {
+string BlockEncryption::modeCFB(Direction direction, int operaMod) {
 
-
-    stringstream resultss;
+    string result;
 
     if(direction == ENCRPT) {
-        //----对明文进行分组-----
-        int arrsize = (plaintext.length() * 4) / operaMode;
-        BigInteger Pblocks[arrsize];
-
-        for (int i = 0; i < arrsize; i++) {
-            string block = plaintext.substr(i * (operaMode / 4), (operaMode / 4));
-            Pblocks[i] = BigInteger(block);
-        }
-        //---------------------
-
-        //密文分组
-        BigInteger Cblocks[arrsize];
-
-        BigInteger shiftReg = IV;   //IV送入移位寄存器
-        class DES des(BigInteger(K), shiftReg, ENCRPT);
-        des.Encrypt();          //Ek 步骤
-        BigInteger sbitsEk = BigInteger(des.getCipher()).toBinary(0).subbits(0, operaMode); //选择s位，此时为二进制
-        Cblocks[0] = Pblocks[0].toBinary(0).XOR(sbitsEk).toHex();         //明文M1和s位Ek作异或操作，最后转为16进制存入密文块中
-        resultss << Cblocks[0].toString();
-
-        for (int i = 1; i < arrsize; i++) {
-
-            shiftReg = shiftRegOperaForCFB(shiftReg, Cblocks[i - 1], operaMode);      //移位寄存器结果
-
-
-            class DES desTwo(BigInteger(K), shiftReg, ENCRPT);
-            desTwo.Encrypt();                                  //Ek 步骤
-            BigInteger SbitsEk = BigInteger(desTwo.getCipher()).toBinary(0).subbits(0, operaMode); //选择s位，此时为二进制
-            Cblocks[i] = Pblocks[i].toBinary(0).XOR(SbitsEk).toHex();       //把明文Mi和s位Ek作异或操作，最后转为16进制存入密文块中
-            resultss << Cblocks[i].toString();
-        }
+        result = operateCFB(plaintext, operaMod);
     } else if(direction == DECRPT) {
-
-        //----对密文进行分组-----
-        int arrsize = (ciphertext.length() * 4) / operaMode;
-        BigInteger Cblocks[arrsize];
-
-        for (int i = 0; i < arrsize; i++) {
-            string block = ciphertext.substr(i * (operaMode / 4), (operaMode / 4));
-            Cblocks[i] = BigInteger(block);
-        }
-        //---------------------
-
-        //明文分组
-        BigInteger Pblocks[arrsize];
-
-        BigInteger shiftReg = IV;   //IV送入移位寄存器
-        class DES des(BigInteger(K), shiftReg, ENCRPT);
-        des.Encrypt();          //Ek 步骤
-        BigInteger sbitsEk = BigInteger(des.getCipher()).toBinary(0).subbits(0, operaMode); //选择s位，此时为二进制
-        Pblocks[0] = Cblocks[0].toBinary(0).XOR(sbitsEk).toHex();         //密文M1和s位Ek作异或操作，最后转为16进制存入密文块中
-        resultss << Pblocks[0].toString();
-
-        for (int i = 1; i < arrsize; i++) {
-
-            shiftReg = shiftRegOperaForCFB(shiftReg, Cblocks[i - 1], operaMode);      //移位寄存器结果
-
-            class DES desTwo(BigInteger(K), shiftReg, ENCRPT);
-            desTwo.Encrypt();                                  //Ek 步骤
-            sbitsEk = BigInteger(desTwo.getCipher()).toBinary(0).subbits(0, operaMode); //选择s位，此时为二进制
-            Pblocks[i] = Cblocks[i].toBinary(0).XOR(sbitsEk).toHex();       //密文明文Mi和s位Ek作异或操作，最后转为16进制存入密文块中
-            resultss << Pblocks[i].toString();
-        }
+        result = operateCFB(ciphertext, operaMod);
     }
 
-    return resultss.str();
-
+    return result;
 }
 
-string BlockEncryption::modeOFB(Direction direction, int operaMode) {
 
-    stringstream resultss;
+
+string BlockEncryption::modeOFB(Direction direction, int operaMod) {
+
+    string result;
 
     if(direction == ENCRPT) {
-        int arrsize = (plaintext.length() * 4) / operaMode;
-        BigInteger Pblocks[arrsize];      //明文分组
-        BigInteger Cblocks[arrsize];       //密文分组
-        BigInteger keyStream[arrsize];     //密钥流
-        //--------对明文进行分组--------
-        for (int i = 0; i < arrsize; i++) {
-            string block = plaintext.substr(i * (operaMode / 4), (operaMode / 4));
-            Pblocks[i] = BigInteger(block);
-        }
-        //----------------------------
-
-        BigInteger shiftReg = BigInteger(IV);
-        class DES des(BigInteger(K), shiftReg, ENCRPT);
-        des.Encrypt();
-        keyStream[0] = BigInteger(des.getCipher());
-        for (int i = 0; i < arrsize; i++) {
-            if (i != arrsize - 1) {
-
-                shiftReg = shiftRegOperaForOFB(shiftReg, keyStream[i], operaMode); //移位寄存器结果
-
-                class DES desTwo(BigInteger(K), shiftReg, ENCRPT);
-                desTwo.Encrypt();                                  //获取新的keyStream
-                keyStream[i + 1] = BigInteger(desTwo.getCipher());       //保存keyStream
-            }
-
-            Cblocks[i] = Pblocks[i].toBinary(0).XOR(keyStream[i].toBinary(0).subbits(0, operaMode)).toHex();
-
-            resultss << Cblocks[i].toString();
-        }
+        result = operateOFB(plaintext, operaMod);
     } else if(direction == DECRPT) {
-        int arrsize = (ciphertext.length() * 4) / operaMode;
-        BigInteger Pblocks[arrsize];        //明文分组
-        BigInteger Cblocks[arrsize];       //密文分组
-        BigInteger keyStream[arrsize];     //密钥流
-        //--------对密文进行分组--------
-        for (int i = 0; i < arrsize; i++) {
-            string block = ciphertext.substr(i * (operaMode / 4), (operaMode / 4));
-            Cblocks[i] = BigInteger(block);
-        }
-        //----------------------------
-
-        BigInteger shiftReg = BigInteger(IV);
-        class DES des(BigInteger(K), shiftReg, ENCRPT);
-        des.Encrypt();
-        keyStream[0] = BigInteger(des.getCipher());
-        for (int i = 0; i < arrsize; i++) {
-            if (i != arrsize - 1) {
-
-                shiftReg = shiftRegOperaForOFB(shiftReg, keyStream[i], operaMode); //移位寄存器结果
-
-                class DES desTwo(BigInteger(K), shiftReg, ENCRPT);
-                desTwo.Encrypt();                                  //获取新的keyStream
-                keyStream[i + 1] = BigInteger(desTwo.getCipher());       //保存keyStream
-            }
-
-            Pblocks[i] = Cblocks[i].toBinary(0).XOR(keyStream[i].toBinary(0).subbits(0, operaMode)).toHex();
-
-            resultss << Pblocks[i].toString();
-        }
+        result = operateOFB(ciphertext, operaMod);
     }
 
-    return resultss.str();
+    return result;
 }
 
 string BlockEncryption::Encrypt() {
@@ -342,4 +226,83 @@ BigInteger BlockEncryption::shiftRegOperaForCFB(BigInteger shiftReg, BigInteger 
     shiftReg = bShiftReg.toHex();                   //保存记录
 
     return shiftReg;
+}
+
+string BlockEncryption::operateCFB(string source, int operaMod) {
+
+
+    stringstream resultss;
+
+    //----对source进行分组-----
+    int arrsize = (source.length() * 4) / operaMod;
+    BigInteger Sourceblocks[arrsize];
+
+    for (int i = 0; i < arrsize; i++) {
+        string block = source.substr(i * (operaMod / 4), (operaMod / 4));
+        Sourceblocks[i] = BigInteger(block);
+    }
+    //---------------------
+
+    //target分组
+    BigInteger Targetblocks[arrsize];
+
+    BigInteger shiftReg = IV;   //IV送入移位寄存器
+    class DES des(BigInteger(K), shiftReg, ENCRPT);
+    des.Encrypt();          //Ek 步骤
+    BigInteger sbitsEk = BigInteger(des.getCipher()).toBinary(0).subbits(0, operaMod); //选择s位，此时为二进制
+    Targetblocks[0] = Sourceblocks[0].toBinary(0).XOR(sbitsEk).toHex();         //明文M1和s位Ek作异或操作，最后转为16进制存入密文块中
+    resultss << Targetblocks[0].toString();
+
+    for (int i = 1; i < arrsize; i++) {
+
+        shiftReg = shiftRegOperaForCFB(shiftReg, Targetblocks[i - 1], operaMod);      //移位寄存器结果
+
+        des.setPlaintext(shiftReg);
+        //class DES desTwo(BigInteger(K), shiftReg, ENCRPT);
+        des.Encrypt();                                  //Ek 步骤
+        sbitsEk = BigInteger(des.getCipher()).toBinary(0).subbits(0, operaMod); //选择s位，此时为二进制
+        Targetblocks[i] = Sourceblocks[i].toBinary(0).XOR(sbitsEk).toHex();       //把明文Mi和s位Ek作异或操作，最后转为16进制存入密文块中
+        resultss << Targetblocks[i].toString();
+
+    }
+
+    return resultss.str();
+
+}
+
+string BlockEncryption::operateOFB(string source, int operaMod) {
+
+    stringstream resultss;
+
+    int arrsize = (source.length() * 4) / operaMod;
+    BigInteger Sourceblocks[arrsize];      //明文分组
+    BigInteger Targetblocks[arrsize];       //密文分组
+    BigInteger keyStream[arrsize];     //密钥流
+    //--------对source进行分组--------
+    for (int i = 0; i < arrsize; i++) {
+        string block = source.substr(i * (operaMod / 4), (operaMod / 4));
+        Sourceblocks[i] = BigInteger(block);
+    }
+    //----------------------------
+
+    BigInteger shiftReg = BigInteger(IV);
+    class DES des(BigInteger(K), shiftReg, ENCRPT);
+    des.Encrypt();
+    keyStream[0] = BigInteger(des.getCipher());
+    for (int i = 0; i < arrsize; i++) {
+        if (i != arrsize - 1) {
+
+            shiftReg = shiftRegOperaForOFB(shiftReg, keyStream[i], operaMod); //移位寄存器结果
+
+            des.setPlaintext(shiftReg);
+            des.Encrypt();                                  //获取新的keyStream
+            keyStream[i + 1] = BigInteger(des.getCipher());       //保存keyStream
+        }
+
+        Targetblocks[i] = Sourceblocks[i].toBinary(0).XOR(keyStream[i].toBinary(0).subbits(0, operaMod)).toHex();
+
+        resultss << Targetblocks[i].toString();
+    }
+
+    return resultss.str();
 }

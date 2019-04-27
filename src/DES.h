@@ -19,6 +19,7 @@ enum Direction{ENCRPT, DECRPT};
 class DES {
 
 private:
+    //-----成员变量-------
     static map<int, int> IP;
     static map<int, int> inverseIP;
     static map<int, int> E;
@@ -33,26 +34,15 @@ private:
     BigInteger D;           //存储D
     BigInteger plaintext;   //存储明文
     BigInteger cipher;      //存储密文
-
     BigInteger Ki[16];      //存储子密钥
-
     Direction initState;    //存储初次方向状态
+    //--------------------
 
 
     //----置换模块----
     BigInteger universalPermutation(BigInteger var, map<int, int> perMap);
     //----分割比特位---
     BigInteger splitBit(BigInteger bits, int size, bool side);
-
-
-
-public:
-
-    //----构造函数-----
-    explicit DES(string K);
-    DES(string K, string target, Direction initState);
-    DES(BigInteger K, BigInteger target, Direction initState);
-
 
     //----生成子密钥----
     void generateKifirstRound(); //生成C0和D0
@@ -87,6 +77,14 @@ public:
     BigInteger InitialInversePermutation(BigInteger var);
 
 
+
+public:
+
+    //----构造函数-----
+    explicit DES(string K);
+    DES(string K, string target, Direction initState);
+    DES(BigInteger K, BigInteger target, Direction initState);
+
     //----加密-----
     void Encrypt();
 
@@ -94,20 +92,16 @@ public:
     void Decrypt();
 
 
-
-    //----重要私有成员设置----
+    //----重要成员设置----
     void setPlaintext(string plaintext);                            //设置明文
     void setPlaintext(BigInteger plaintext);
     void setCipher(string cipher);                              //设置密文
     void setCipher(BigInteger cipher);
+    void setKey(string key);                            //设置密钥
+    void setKey(BigInteger key);
+    void setState(Direction direction);
     string getPlaintext();
     string getCipher();
-
-
-    //测试函数(完成后清除）
-    void printPer();
-    void printArg();
-
 
 
 };
