@@ -6,12 +6,17 @@
 
 BlockEncryption::BlockEncryption() {}
 
+BlockEncryption::BlockEncryption(Algorithm algorithm) {
+    this->currentAlgorithm = algorithm;
+}
+
 BlockEncryption::BlockEncryption(ModeOfOperation mod, Algorithm algorithm, string plaintext, string cipher, string K) {
 
     currentMod = mod;
     currentAlgorithm = algorithm;
 
-    this->plaintext = plaintext;
+    //this->plaintext = plaintext;
+    this->plaintext = padding(plaintext, 16);
     this->K = K;
     this->ciphertext = cipher;
 
@@ -21,7 +26,8 @@ BlockEncryption::BlockEncryption(ModeOfOperation mod, Algorithm algorithm, strin
     currentMod = mod;
     currentAlgorithm = algorithm;
 
-    this->plaintext = plaintext;
+    //this->plaintext = plaintext;
+    this->plaintext = padding(plaintext, 16);
     this->K = K;
     this->ciphertext = cipher;
     this->IV = BigInteger(IV);
@@ -183,7 +189,8 @@ string BlockEncryption::Decrypt() {
 //------设置函数-------
 
 void BlockEncryption::setPlaintext(string plain) {
-    this->plaintext = plain;
+    //this->plaintext = plain;
+    this->plaintext = padding(plain, 16);
 }
 
 void BlockEncryption::setCipher(string cipher) {
@@ -305,4 +312,16 @@ string BlockEncryption::operateOFB(string source, int operaMod) {
     }
 
     return resultss.str();
+}
+
+string BlockEncryption::padding(string source, int blockSize) {
+
+    stringstream afterPadding;
+    afterPadding << source;
+
+    while(afterPadding.str().size() % blockSize != 0) {
+        afterPadding << '0';
+    }
+
+    return afterPadding.str();
 }

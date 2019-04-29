@@ -36,11 +36,13 @@ private:
     //-----辅助函数----
     string operateCFB(string source, int operaMod);
     string operateOFB(string source, int operaMod);
+    string padding(string source, int blockSize);
 
 
 public:
 
     BlockEncryption();
+    BlockEncryption(Algorithm algorithm);
     BlockEncryption(ModeOfOperation mod, Algorithm algorithm, string plaintext, string cipher, string K);
     BlockEncryption(ModeOfOperation mod, Algorithm algorithm, string plaintext, string cipher, string K, string IV);
 
